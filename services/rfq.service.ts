@@ -2,36 +2,51 @@ import { prisma } from "@/lib/prisma";
 import { CreateRFQDTO, UpdateRFQDTO } from "@/types/rfq.types";
 
 export const RFQService = {
+  // CREATE RFQ + ASSIGN VENDORS
   async createRFQ(data: CreateRFQDTO, userId: string) {
-    
-    const rfq = await prisma.$transaction(async (tx : any) => {
-  const createdRfq = await tx.rfq.create({
-    data: {
-      title: data.title,
-      description: data.description,
-      quantity: data.quantity,
-      deadline: new Date(data.deadline),
-    },
-  });
+    return prisma.$transaction(async (tx : any) => {
+      const rfq = await tx.rfq.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          quantity: data.quantity,
+          deadline: new Date(data.deadline),
+          createdBy: userId,
+          status: "OPEN",
+        },
+      });
 
-  await tx.rfqVendor.createMany({
-    data: data.vendorIds.map((vendorId) => ({
-      rfqId: createdRfq.id,
-      vendorId,
-    })),
-  });
+      if (data.vendorIds?.length) {
+        await tx.rfqVendor.createMany({
+        data: data.vendorIds.map((vendorId) => ({
+          rfqId: rfq.id,
+          vendorId,
+          status: "INVITED",
+        })),
+        skipDuplicates: true,
+      });
 
-  return createdRfq;
-});
+       await tx.activityLog.create({
+        data: {
+          action: "RFQ_CREATED",
+          entityType: "RFQ",
+          entityId: rfq.id,
+          userId,
+        },
+      });
 
-    return rfq;
+      }
+
+      return rfq;
+    });
   },
 
+  // GET ALL RFQs
   async getAllRFQs() {
     return prisma.rfq.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        vendors: {
+        rfqVendors: {
           include: {
             vendor: true,
           },
@@ -41,11 +56,12 @@ export const RFQService = {
     });
   },
 
+  // GET RFQ BY ID
   async getRFQById(id: string) {
     const rfq = await prisma.rfq.findUnique({
       where: { id },
       include: {
-        vendors: {
+        rfqVendors: {
           include: {
             vendor: true,
           },
@@ -59,10 +75,14 @@ export const RFQService = {
     return rfq;
   },
 
-  async updateRFQ(id: string, data: UpdateRFQDTO) {
+  // UPDATE RFQ
+    async updateRFQ(id: string, data: UpdateRFQDTO) {
     const existing = await prisma.rfq.findUnique({ where: { id } });
-
     if (!existing) throw new Error("RFQ not found");
+
+    if (existing.status === "CLOSED") {
+      throw new Error("Cannot update closed RFQ");
+    }
 
     return prisma.rfq.update({
       where: { id },
@@ -72,18 +92,32 @@ export const RFQService = {
       },
     });
   },
-
-  async deleteRFQ(id: string) {
+  // DELETE RFQ (cleanup relations properly)
+    async deleteRFQ(id: string, userId: string) {
     const existing = await prisma.rfq.findUnique({ where: { id } });
-
     if (!existing) throw new Error("RFQ not found");
 
-    await prisma.rfqVendor.deleteMany({
-      where: { rfqId: id },
-    });
+    return prisma.$transaction(async (tx : any) => {
 
-    return prisma.rfq.delete({
-      where: { id },
+      await tx.rfqVendor.deleteMany({
+        where: { rfqId: id },
+      });
+
+      await tx.rfq.delete({
+        where: { id },
+      });
+
+      await tx.activityLog.create({
+        data: {
+          action: "RFQ_DELETED",
+          entityType: "RFQ",
+          entityId: id,
+          userId,
+        },
+      });
+
+      return true;
     });
   },
+
 };
