@@ -4,7 +4,9 @@ import { CreateQuotationDTO, UpdateQuotationDTO } from "@/types/quotation.types"
 export const QuotationService = {
   
   // CREATE QUOTATION (VENDOR SIDE)
+
   async createQuotation(data: CreateQuotationDTO, vendorId: string) {
+    
     return prisma.quotation.create({
       data: {
         rfqId: data.rfqId,
