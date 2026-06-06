@@ -3,6 +3,7 @@ import { CreateRFQDTO, UpdateRFQDTO } from "@/types/rfq.types";
 
 export const RFQService = {
   async createRFQ(data: CreateRFQDTO, userId: string) {
+    
     const rfq = await prisma.rfq.create({
       data: {
         title: data.title,

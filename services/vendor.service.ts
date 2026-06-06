@@ -3,7 +3,9 @@ import { CreateVendorDTO, UpdateVendorDTO } from "@/types/vendor.types";
 
 export const VendorService = {
   async createVendor(data: CreateVendorDTO, userId?: string) {
+    
     return prisma.vendor.create({
+
       data: {
         ...data,
          userId,
