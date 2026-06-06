@@ -1,0 +1,162 @@
+VendorBridge
+Procurement & V endo r Ma nagement ER P 
+ 
+The vision f or Vendor Bridge is to simplify  and digitiz e procur ement operations  for 
+organizations  through a  centraliz ed ERP  platform that manages  vendors, RFQs,  
+quot ations,  appr ovals, pur chase or ders,  and in voice generation. 
+The plat form aims  to reduce  manual  procur ement inef ficiencies  by enabling 
+structur ed w orkflows, centraliz ed vendor communic ation,  and r eal-time 
+procur ement tracking.  
+Vendor Bridge focuses on  deliv ering cor e ERP  functionalities with  clean 
+architectur e, role-b ased w orkflows, and sc alable module design.   
+ 
+Design and de velop a  Procur ement & V endor Management  ERP  wher e 
+organizations  can: 
+● Regist er and manage  vendors 
+● Create RFQs  
+● Receiv e vendor quot ations  
+● Comp are quot ations  
+● Process pr ocur ement appr ovals 
+● Generat e pur chase or ders 
+● Generat e invoices 
+● Print in voices 
+● Send in voices thr ough email 
+● Track pr ocur ement activities 
+The applic ation  must demonstrat e proper ERP  architectur e, reusable modules, 
+secur e workflows, and intuitiv e UI/UX while  handling pr ocur ement r elationships 
+between v endors, quot ations,  appr ovals, pur chase or ders,  and in voices. Overall Vision
+Problem Statement
+ 
+1. Lo gin / S ignup S creen  
+Purpose 
+Authentic ate users and pr ovide r ole-b ased pr ocur ement access. 
+Key Functionalities  
+● Email & p assw ord login 
+● Signup functionalit y 
+● Forgot p assw ord 
+● Session  handling 
+● Validation  
+● Role-b ased authentic ation  
+ 
+2. Dashbo ard / Ho me S creen  
+Purpose 
+Allow users t o quickl y monit or pr ocur ement activities.  
+Key Functionalities  
+● Pending appr ovals 
+● Activ e RFQs  
+● Recent pur chase or ders 
+● Recent in voices 
+● Analytics c ards 
+● Quick action butt ons 
+ 
+3. Vendo r Ma nagement S creen  
+Purpose 
+Maint ain organiz ed vendor r ecor ds. 
+Key Functionalities  
+● Vendor r egistration & V endor st atus tracking 
+● Vendor c ategor ies 
+● GST details 
+● Cont act det ails 
+● Search & filtering Features
+4. RFQ Creation Screen  
+Purpose 
+Initiat e procur ement w orkflows ef ficientl y. 
+Key Functionalities  
+● RFQ title 
+● Product/ser vice det ails 
+● Quantit y management  
+● Attachment s 
+● Deadline selection 
+● Vendor assignment  
+ 
+5. Vendo r Quotation Submissio n Screen  
+Purpose 
+Allow vendors t o respond t o procur ement r equest s. 
+Key Functionalities  
+● Pricing  details 
+● Deliv ery timelines 
+● Notes/comment s 
+● Editable quot ations  
+● Quot ation  submission 
+ 
+6. Quotation Co mparison Screen  
+Purpose 
+Help  procur ement t eams select the most suit able v endor . 
+Key Functionalities  
+● Side-b y-side quot ation  comp arison 
+● Lowest pr ice highlighting  
+● Deliv ery timeline comp arison 
+● Vendor rating indic ators 
+● Sorting & fil tering 
+7. Appr oval Workflow Screen  
+Purpose 
+Ensur e structur ed pr ocur ement appr ovals. 
+Key Functionalities  
+● Appr ove/reject  actions  
+● Appr oval remar ks 
+● Appr oval timeline 
+● Status tracking 
+● Workflow state transitions  
+ 
+8. Purchase O rder & I nvoice Genera tion Screen  
+Purpose 
+Convert appr oved quot ations  into official pr ocur ement document s. 
+Key Functionalities  
+● Auto-generat ed PO  number  
+● Invoice generation 
+● Tax calculations 
+● Total calculations 
+● Downlo ad in voice as  PDF 
+● Print in voice 
+● Send in voice via email 
+● Status updat es 
+ 
+9. Activit y Logs & No tifications Screen  
+Purpose 
+Keep users inf ormed about pr ocur ement updat es. 
+Key Functionalities  
+● RFQ notific ations  
+● Appr oval aler ts 
+● Invoice updat es 
+● Activit y timeline 
+● Audit  logs 
+10. Reports & Ana lytics S creen  
+Purpose 
+Provide pr ocur ement insight s and tr ends. 
+Key Functionalities  
+● Vendor per formance anal ytics & Expor table r epor ts 
+● Procur ement st atistics 
+● Spending summar ies 
+● Monthl y procur ement tr ends 
+ 
+Procurement O fficer 
+● Create RFQs  
+● Comp are quot ations  
+● Generat e pur chase or ders 
+● Generat e invoices 
+Vendo r 
+● Submit quot ations  
+● Track RFQ st atus 
+● View pur chase or ders 
+Manager / Appr over 
+● Appr ove or r eject  procur ement r equest s 
+● Monit or pr ocur ement w orkflows 
+Admin 
+● Manage  users 
+● Manage  vendors 
+● View procur ement anal ytics 
+ 
+ User Roles
+ 
+  
+Basic W orkflow  
+1. Procur ement Of ficer  creates an  RFQ . 
+2. Vendors r eceiv e invitations  and submit  quot ations.  
+3. Procur ement t eam comp ares quot ations.  
+4. Appr oval workflow is initiat ed. 
+5. Appr oved quot ations  generat e Pur chase Or ders.  
+6. Invoice is generat ed fr om the Pur chase Or der. 
+7. Invoice c an be pr inted or emailed dir ectly. 
+8. Procur ement activities ar e track ed thr ough logs and anal ytics. 
+ 
+Mock Up:- https://app.e xcalidraw .com/l/65VNwvy7 c4X/5ywnm0v3qhK  
