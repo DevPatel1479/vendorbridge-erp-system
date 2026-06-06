@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^5.4.0",
+    "@mui/icons-material": "^5.15.0",
+    "@mui/material": "^5.15.0",
+    "@mui/x-date-pickers": "^6.18.0",
     "@prisma/client": "^6.19.3",
     "@radix-ui/react-label": "^2.1.9",
     "@types/bcryptjs": "^2.4.6",
@@ -19,6 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "dayjs": "^1.11.10",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
@@ -28,13 +34,8 @@
     "radix-ui": "^1.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.0",
-    "@mui/material": "^5.15.0",
-    "@mui/x-date-pickers": "^6.18.0",
-    "dayjs": "^1.11.10",
-    "recharts": "^2.10.3"
+    "recharts": "^2.10.3",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
