@@ -29,29 +29,29 @@ export const RFQService = {
 
   async getAllRFQs() {
     return prisma.rfq.findMany({
-      orderBy: { createdAt: "desc" },
+  orderBy: { createdAt: "desc" },
+  include: {
+    rfqVendors: {
       include: {
-        vendors: {
-          include: {
-            vendor: true,
-          },
-        },
-        quotations: true,
+        vendor: true,
       },
-    });
+    },
+    quotations: true,
+  },
+});
   },
 
   async getRFQById(id: string) {
     const rfq = await prisma.rfq.findUnique({
       where: { id },
       include: {
-        vendors: {
-          include: {
-            vendor: true,
-          },
-        },
-        quotations: true,
-      },
+  rfqVendors: {
+    include: {
+      vendor: true,
+    },
+  },
+  quotations: true,
+}
     });
 
     if (!rfq) throw new Error("RFQ not found");
