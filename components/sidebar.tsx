@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard, Users, ClipboardList, FileText,
-  CheckSquare, ShoppingCart, Receipt, BarChart3, Activity, Building2, LogOut,
+  CheckSquare, ShoppingCart, BarChart3, Activity, Building2, LogOut,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -14,8 +14,7 @@ const navItems = [
   { label: "RFQ's", href: "/rfqs", icon: ClipboardList },
   { label: "Quotations", href: "/quotations", icon: FileText },
   { label: "Approvals", href: "/approvals", icon: CheckSquare },
-  { label: "Purchase Orders", href: "/purchase-orders", icon: ShoppingCart },
-  { label: "Invoices", href: "/invoices", icon: Receipt },
+  { label: "Purchase Orders & Invoices", href: "/po-invoice", icon: ShoppingCart },
   { label: "Reports", href: "/reports", icon: BarChart3 },
   { label: "Activity", href: "/activity", icon: Activity },
 ]
