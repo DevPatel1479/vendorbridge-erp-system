@@ -52,6 +52,13 @@ export default function QuotationComparisonPage() {
   }, [selectedRfq])
 
   const handleApprove = async (qId: string) => {
+    // Block if any quotation is already approved
+    const alreadyApproved = quotations.some(q => q.status === "APPROVED")
+    if (alreadyApproved) {
+      alert("A quotation for this RFQ is already approved. You cannot approve another one.")
+      return
+    }
+
     if (!confirm("Are you sure you want to approve this quotation?")) return
     try {
       const res = await fetch(`/api/quotations/${qId}`, {
@@ -60,12 +67,32 @@ export default function QuotationComparisonPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "APPROVED" })
       })
-      if (res.ok) {
-        alert("Quotation approved successfully!")
-        setQuotations(prev => prev.map(q => q.id === qId ? { ...q, status: "APPROVED" } : q))
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || "Failed to update quotation status")
       }
-    } catch (err) {
-      alert("Error approving quotation")
+
+      // Auto-generate Purchase Order
+      try {
+        const poRes = await fetch("/api/purchase-orders", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quotationId: qId })
+        })
+        if (!poRes.ok) {
+          const poErr = await poRes.json().catch(() => ({}))
+          console.error("PO creation error:", poErr.error)
+        }
+      } catch (poErr) {
+        console.error("Failed to auto-generate PO", poErr)
+      }
+      
+      alert("Quotation approved and Purchase Order generated successfully!")
+      setQuotations(prev => prev.map(q => q.id === qId ? { ...q, status: "APPROVED" } : q))
+    } catch (err: any) {
+      alert(`Error: ${err.message || "Failed to approve quotation"}`)
     }
   }
 
@@ -154,13 +181,13 @@ export default function QuotationComparisonPage() {
                   {quotations.map(q => {
                     const isLowest = q.amount === lowestAmount
                     return (
-                      <th key={q.id} className={`p-6 border-b border-r border-white/10 min-w-[250px] relative ${isLowest ? 'bg-emerald-500/5' : ''}`}>
+                      <th key={q.id} className={`p-6 border-b border-r border-white/10 min-w-[250px] ${isLowest ? 'bg-emerald-500/5' : ''}`}>
                         {isLowest && (
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-emerald-500/20 flex items-center gap-1">
+                          <div className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded-full mb-3 border border-emerald-500/20">
                             <TrendingDown className="w-3 h-3" /> LOWEST PRICE
                           </div>
                         )}
-                        <h3 className="text-lg font-bold text-white mb-1">{q.vendor?.companyName || "Unknown Vendor"}</h3>
+                        <h3 className="text-lg font-bold text-white mb-2">{q.vendor?.companyName || "Unknown Vendor"}</h3>
                         <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                           q.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' : 
                           q.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'
@@ -225,8 +252,8 @@ export default function QuotationComparisonPage() {
                           q.status === 'APPROVED' 
                             ? 'bg-emerald-500/20 text-emerald-500 cursor-not-allowed border border-emerald-500/20' 
                             : q.amount === lowestAmount 
-                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
-                              : 'bg-white/5 hover:bg-white/10 text-white/80 border border-white/10'
+                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]' 
+                              : 'bg-white/5 hover:bg-violet-600 text-white/80 hover:text-white border border-white/10 hover:border-violet-500 hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]'
                         }`}
                       >
                         {q.status === 'APPROVED' ? (

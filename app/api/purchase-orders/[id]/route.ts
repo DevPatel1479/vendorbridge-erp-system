@@ -9,9 +9,9 @@ type Context = {
 };
 
 // GET
-export async function GET(req: Request, context: Context) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = context.params?.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
