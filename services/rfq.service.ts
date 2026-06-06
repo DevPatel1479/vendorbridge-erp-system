@@ -13,7 +13,7 @@ export const RFQService = {
   },
 });
 
-await prisma.rfqVendor.createMany({
+await prisma.rFQVendor.createMany({
   data: data.vendorIds.map((vendorId) => ({
     rfqId: rfq.id,
     vendorId,
@@ -74,7 +74,7 @@ await prisma.rfqVendor.createMany({
 
     if (!existing) throw new Error("RFQ not found");
 
-    await prisma.rfqVendor.deleteMany({
+    await prisma.rFQVendor.deleteMany({
       where: { rfqId: id },
     });
 
