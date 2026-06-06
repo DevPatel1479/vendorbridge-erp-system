@@ -14,7 +14,6 @@ enum RFQVendorStatus {
   RESPONDED
 }
 
-
 model User {
   id        String     @id @default(cuid())
   name      String
@@ -75,25 +74,23 @@ model Vendor {
   user        User?       @relation(fields: [userId], references: [id])
 }
 
-
 model Rfq {
-  id          String      @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   description String?
   quantity    Int
   deadline    DateTime
-  status      RFQStatus   @default(OPEN)
+  status      RFQStatus @default(OPEN)
 
-  createdBy   String?     // 🔥 ADD THIS
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  closedAt    DateTime?
+  createdBy String? // 🔥 ADD THIS
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  closedAt  DateTime?
 
-  quotations  Quotation[]
-  rfqVendors  RfqVendor[]
-
-
+  quotations Quotation[]
+  rfqVendors RfqVendor[]
 }
+
 model Quotation {
   id            String          @id @default(cuid())
   rfqId         String
@@ -121,43 +118,85 @@ model Approval {
 }
 
 model PurchaseOrder {
-  id          String    @id @default(cuid())
-  poNumber    String    @unique
-  quotationId String    @unique
-  createdAt   DateTime  @default(now())
-  invoice     Invoice?
-  quotation   Quotation @relation(fields: [quotationId], references: [id])
+  id          String @id @default(cuid())
+  poNumber    String @unique
+  quotationId String @unique
+
+  subtotal Float
+  tax      Float
+  total    Float
+
+  status POStatus @default(GENERATED)
+
+  createdBy  String?
+  approvedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quotation Quotation @relation(fields: [quotationId], references: [id])
+  invoice   Invoice?
+}
+
+enum POStatus {
+  GENERATED
+  SENT
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }
 
 model Invoice {
-  id              String        @id @default(cuid())
-  invoiceNumber   String        @unique
-  purchaseOrderId String        @unique
-  taxAmount       Float
-  totalAmount     Float
-  createdAt       DateTime      @default(now())
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  id            String @id @default(cuid())
+  invoiceNumber String @unique
+
+  purchaseOrderId String @unique
+
+  subtotal    Float
+  taxAmount   Float
+  totalAmount Float
+
+  status InvoiceStatus @default(GENERATED)
+
+  pdfUrl String?
+  sentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+}
+
+enum InvoiceStatus {
+  GENERATED
+  SENT
+  PAID
+  CANCELLED
 }
 
 model ActivityLog {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   action     String
   entityType String
   entityId   String
-  userId     String?
-  createdAt  DateTime @default(now())
+
+  userId   String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
 }
 
 model RfqVendor {
-  id       String @id @default(cuid())
+  id       String          @id @default(cuid())
   rfqId    String
   vendorId String
-  status    RFQVendorStatus @default(INVITED) 
-  rfq      Rfq    @relation(fields: [rfqId], references: [id])
-  vendor   Vendor @relation(fields: [vendorId], references: [id])
+  status   RFQVendorStatus @default(INVITED)
+  rfq      Rfq             @relation(fields: [rfqId], references: [id])
+  vendor   Vendor          @relation(fields: [vendorId], references: [id])
 
   @@unique([rfqId, vendorId])
 }
+
 enum UserRole {
   ADMIN
   PROCUREMENT_OFFICER
