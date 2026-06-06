@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const vendor = await VendorService.createVendor(body, null);
+    const vendor = await VendorService.createVendor(body);
 
     return NextResponse.json(vendor, { status: 201 });
   } catch (err: any) {
