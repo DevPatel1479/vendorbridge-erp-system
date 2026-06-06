@@ -98,7 +98,7 @@ enum RFQStatus {
 }
 
 
-model RFQ {
+model Rfq {
   id            String      @id @default(cuid())
 
   title         String
@@ -122,8 +122,8 @@ model RFQVendor {
   rfqId       String
   vendorId    String
 
-  rfq         RFQ @relation(fields: [rfqId], references: [id])
-  vendor      Vendor @relation(fields: [vendorId], references: [id])
+  rfq     Rfq    @relation(fields: [rfqId], references: [id])
+  vendor  Vendor @relation(fields: [vendorId], references: [id])
 
   @@unique([rfqId, vendorId])
 }
@@ -151,8 +151,8 @@ model Quotation {
 
   createdAt       DateTime @default(now())
 
-  rfq             RFQ @relation(fields: [rfqId], references: [id])
-  vendor          Vendor @relation(fields: [vendorId], references: [id])
+  rfq       Rfq    @relation(fields: [rfqId], references: [id])
+  vendor    Vendor @relation(fields: [vendorId], references: [id])
 
   approval        Approval?
   purchaseOrder   PurchaseOrder?
