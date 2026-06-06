@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RFQVendorStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  RESPONDED
+}
+
+
 model User {
   id        String     @id @default(cuid())
   name      String
@@ -67,6 +75,7 @@ model Vendor {
   user        User?       @relation(fields: [userId], references: [id])
 }
 
+
 model Rfq {
   id          String      @id @default(cuid())
   title       String
@@ -74,14 +83,17 @@ model Rfq {
   quantity    Int
   deadline    DateTime
   status      RFQStatus   @default(OPEN)
+
+  createdBy   String?     // 🔥 ADD THIS
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  closedAt    DateTime?
+
   quotations  Quotation[]
   rfqVendors  RfqVendor[]
 
   @@map("rfqs")
 }
-
 model Quotation {
   id            String          @id @default(cuid())
   rfqId         String
@@ -140,7 +152,7 @@ model RfqVendor {
   id       String @id @default(cuid())
   rfqId    String
   vendorId String
-
+  status    RFQVendorStatus @default(INVITED) 
   rfq      Rfq    @relation(fields: [rfqId], references: [id])
   vendor   Vendor @relation(fields: [vendorId], references: [id])
 
