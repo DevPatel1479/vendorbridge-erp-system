@@ -137,7 +137,7 @@ model ActivityLog {
 }
 
 model RFQVendor {
-  id       String @id
+  id       String @id @default(cuid())
   rfqId    String
   vendorId String
   rfqs     Rfq    @relation(fields: [rfqId], references: [id])
