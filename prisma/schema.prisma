@@ -63,7 +63,7 @@ model Vendor {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   quotations  Quotation[]
-  RFQVendor   RFQVendor[]
+  rfqVendors  RfqVendor[]
   user        User?       @relation(fields: [userId], references: [id])
 }
 
@@ -77,7 +77,7 @@ model Rfq {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   quotations  Quotation[]
-  RFQVendor   RFQVendor[]
+  rfqVendors  RfqVendor[]
 
   @@map("rfqs")
 }
@@ -136,16 +136,16 @@ model ActivityLog {
   createdAt  DateTime @default(now())
 }
 
-model RFQVendor {
+model RfqVendor {
   id       String @id @default(cuid())
   rfqId    String
   vendorId String
-  rfqs     Rfq    @relation(fields: [rfqId], references: [id])
-  Vendor   Vendor @relation(fields: [vendorId], references: [id])
+
+  rfq      Rfq    @relation(fields: [rfqId], references: [id])
+  vendor   Vendor @relation(fields: [vendorId], references: [id])
 
   @@unique([rfqId, vendorId])
 }
-
 enum UserRole {
   ADMIN
   PROCUREMENT_OFFICER

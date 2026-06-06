@@ -4,20 +4,24 @@ import { CreateRFQDTO, UpdateRFQDTO } from "@/types/rfq.types";
 export const RFQService = {
   async createRFQ(data: CreateRFQDTO, userId: string) {
     
-    const rfq = await prisma.rfq.create({
-  data: {
-    title: data.title,
-    description: data.description,
-    quantity: data.quantity,
-    deadline: new Date(data.deadline),
-  },
-});
+    const rfq = await prisma.$transaction(async (tx : any) => {
+  const createdRfq = await tx.rfq.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      quantity: data.quantity,
+      deadline: new Date(data.deadline),
+    },
+  });
 
-await prisma.rFQVendor.createMany({
-  data: data.vendorIds.map((vendorId) => ({
-    rfqId: rfq.id,
-    vendorId,
-  })),
+  await tx.rfqVendor.createMany({
+    data: data.vendorIds.map((vendorId) => ({
+      rfqId: createdRfq.id,
+      vendorId,
+    })),
+  });
+
+  return createdRfq;
 });
 
     return rfq;
@@ -74,7 +78,7 @@ await prisma.rFQVendor.createMany({
 
     if (!existing) throw new Error("RFQ not found");
 
-    await prisma.rFQVendor.deleteMany({
+    await prisma.rfqVendor.deleteMany({
       where: { rfqId: id },
     });
 
