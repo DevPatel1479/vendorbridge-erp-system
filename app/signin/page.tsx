@@ -378,3 +378,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+Above is the code for login page and in login page there is option of create account. So I want to redirect the page for that. How to do that ? The register page path is app/register/page.tsx ?
