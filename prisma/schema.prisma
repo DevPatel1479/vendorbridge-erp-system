@@ -92,7 +92,7 @@ model Rfq {
   quotations  Quotation[]
   rfqVendors  RfqVendor[]
 
-  @@map("rfqs")
+
 }
 model Quotation {
   id            String          @id @default(cuid())
