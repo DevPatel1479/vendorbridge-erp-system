@@ -7,44 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  PROCUREMENT_OFFICER
-  MANAGER
-  VENDOR
+enum RFQVendorStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+  RESPONDED
 }
 
+
 model User {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
-  email     String   @unique
+  email     String     @unique
   password  String
   role      UserRole
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  vendor    Vendor?
-
-  approvals Approval[]
-
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   accounts  Account[]
+  approvals Approval[]
   sessions  Session[]
-
-
+  vendors   Vendor[]
 
   @@map("users")
 }
 
-
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -54,8 +47,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -66,26 +58,111 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
 model Vendor {
-  id            String   @id @default(cuid())
+  id          String      @id @default(cuid())
+  userId      String?
+  companyName String
+  gstNumber   String?
+  email       String
+  phone       String?
+  address     String?
+  category    String?
+  status      String      @default("ACTIVE")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  quotations  Quotation[]
+  rfqVendors  RfqVendor[]
+  user        User?       @relation(fields: [userId], references: [id])
+}
 
-  userId        String?  @unique
-  user          User?    @relation(fields: [userId], references: [id])
 
-  companyName   String
-  gstNumber     String?
-  email         String
-  phone         String?
-  address       String?
-  category      String?
-  status        String   @default("ACTIVE")
+model Rfq {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  quantity    Int
+  deadline    DateTime
+  status      RFQStatus   @default(OPEN)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdBy   String?     // 🔥 ADD THIS
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  closedAt    DateTime?
 
-  rfqAssignments RFQVendor[]
-  quotations     Quotation[]
+  quotations  Quotation[]
+  rfqVendors  RfqVendor[]
+
+
+}
+model Quotation {
+  id            String          @id @default(cuid())
+  rfqId         String
+  vendorId      String
+  amount        Float
+  deliveryDays  Int
+  notes         String?
+  status        QuotationStatus @default(SUBMITTED)
+  createdAt     DateTime        @default(now())
+  approval      Approval?
+  purchaseOrder PurchaseOrder?
+  rfq           Rfq             @relation(fields: [rfqId], references: [id])
+  vendor        Vendor          @relation(fields: [vendorId], references: [id])
+}
+
+model Approval {
+  id          String         @id @default(cuid())
+  quotationId String         @unique
+  approverId  String
+  remarks     String?
+  status      ApprovalStatus @default(PENDING)
+  createdAt   DateTime       @default(now())
+  approver    User           @relation(fields: [approverId], references: [id])
+  quotation   Quotation      @relation(fields: [quotationId], references: [id])
+}
+
+model PurchaseOrder {
+  id          String    @id @default(cuid())
+  poNumber    String    @unique
+  quotationId String    @unique
+  createdAt   DateTime  @default(now())
+  invoice     Invoice?
+  quotation   Quotation @relation(fields: [quotationId], references: [id])
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  invoiceNumber   String        @unique
+  purchaseOrderId String        @unique
+  taxAmount       Float
+  totalAmount     Float
+  createdAt       DateTime      @default(now())
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String
+  userId     String?
+  createdAt  DateTime @default(now())
+}
+
+model RfqVendor {
+  id       String @id @default(cuid())
+  rfqId    String
+  vendorId String
+  status    RFQVendorStatus @default(INVITED) 
+  rfq      Rfq    @relation(fields: [rfqId], references: [id])
+  vendor   Vendor @relation(fields: [vendorId], references: [id])
+
+  @@unique([rfqId, vendorId])
+}
+enum UserRole {
+  ADMIN
+  PROCUREMENT_OFFICER
+  MANAGER
+  VENDOR
 }
 
 enum RFQStatus {
@@ -95,132 +172,14 @@ enum RFQStatus {
   APPROVED
 }
 
-
-model RFQ {
-  id            String      @id @default(cuid())
-
-  title         String
-  description   String?
-  quantity      Int
-  deadline      DateTime
-
-  status        RFQStatus   @default(OPEN)
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  vendors       RFQVendor[]
-  quotations    Quotation[]
-}
-
-
-model RFQVendor {
-  id          String @id @default(cuid())
-
-  rfqId       String
-  vendorId    String
-
-  rfq         RFQ @relation(fields: [rfqId], references: [id])
-  vendor      Vendor @relation(fields: [vendorId], references: [id])
-
-  @@unique([rfqId, vendorId])
-}
-
-
 enum QuotationStatus {
   SUBMITTED
   APPROVED
   REJECTED
 }
 
-
-model Quotation {
-  id              String @id @default(cuid())
-
-  rfqId           String
-  vendorId        String
-
-  amount          Float
-  deliveryDays    Int
-
-  notes           String?
-
-  status          QuotationStatus @default(SUBMITTED)
-
-  createdAt       DateTime @default(now())
-
-  rfq             RFQ @relation(fields: [rfqId], references: [id])
-  vendor          Vendor @relation(fields: [vendorId], references: [id])
-
-  approval        Approval?
-  purchaseOrder   PurchaseOrder?
-}
-
-
 enum ApprovalStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-
-model Approval {
-  id            String @id @default(cuid())
-
-  quotationId   String @unique
-  approverId    String
-
-  remarks       String?
-
-  status        ApprovalStatus @default(PENDING)
-
-  createdAt     DateTime @default(now())
-
-  quotation      Quotation @relation(fields: [quotationId], references: [id])
-  approver       User @relation(fields: [approverId], references: [id])
-}
-
-
-model PurchaseOrder {
-  id              String @id @default(cuid())
-
-  poNumber        String @unique
-
-  quotationId     String @unique
-
-  createdAt       DateTime @default(now())
-
-  quotation       Quotation @relation(fields: [quotationId], references: [id])
-
-  invoice         Invoice?
-}
-
-
-model Invoice {
-  id                String @id @default(cuid())
-
-  invoiceNumber     String @unique
-
-  purchaseOrderId   String @unique
-
-  taxAmount         Float
-  totalAmount       Float
-
-  createdAt         DateTime @default(now())
-
-  purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
-}
-
-
-model ActivityLog {
-  id          String @id @default(cuid())
-
-  action      String
-
-  entityType  String
-  entityId    String
-
-  userId      String?
-
-  createdAt   DateTime @default(now())
 }
