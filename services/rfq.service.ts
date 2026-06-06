@@ -5,22 +5,20 @@ export const RFQService = {
   async createRFQ(data: CreateRFQDTO, userId: string) {
     
     const rfq = await prisma.rfq.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        quantity: data.quantity,
-        deadline: new Date(data.deadline),
+  data: {
+    title: data.title,
+    description: data.description,
+    quantity: data.quantity,
+    deadline: new Date(data.deadline),
+  },
+});
 
-        vendors: {
-          create: data.vendorIds.map((vendorId) => ({
-            vendorId,
-          })),
-        },
-      },
-      include: {
-        vendors: true,
-      },
-    });
+await prisma.rfqVendor.createMany({
+  data: data.vendorIds.map((vendorId) => ({
+    rfqId: rfq.id,
+    vendorId,
+  })),
+});
 
     return rfq;
   },
