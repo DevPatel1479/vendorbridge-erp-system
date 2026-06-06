@@ -38,11 +38,11 @@ export const InvoiceService = {
         subtotal: po.subtotal,
         taxAmount: po.tax,
         totalAmount: po.total,
-        status: "GENERATED",
+        status: "GENERATED" as InvoiceStatus,
       },
     });
 
-    return invoice;
+    return invoice as unknown as InvoiceResponse;
   },
 
   // GET ALL
@@ -109,7 +109,7 @@ export const InvoiceService = {
     return prisma.invoice.update({
       where: { id },
       data: {
-        status,
+        status: status as any,
         sentAt: status === "SENT" ? new Date() : undefined,
       },
     });
