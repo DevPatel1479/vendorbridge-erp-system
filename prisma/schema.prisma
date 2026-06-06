@@ -24,19 +24,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  
-
   vendors   Vendor[]
   approvals Approval[]
 
   accounts  Account[]
   sessions  Session[]
 
-
-
   @@map("users")
 }
-
 
 model Account {
   id                 String  @id @default(cuid())
@@ -67,7 +62,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
 model Vendor {
   id            String   @id @default(cuid())
 
@@ -89,7 +83,6 @@ model Vendor {
   quotations     Quotation[]
 }
 
-
 enum RFQStatus {
   DRAFT
   OPEN
@@ -97,24 +90,24 @@ enum RFQStatus {
   APPROVED
 }
 
-
-model Rfq {
-  id            String      @id @default(cuid())
+model RFQ {
+  id            String   @id @default(cuid())
 
   title         String
   description   String?
   quantity      Int
   deadline      DateTime
 
-  status        RFQStatus   @default(OPEN)
+  status        RFQStatus @default(OPEN)
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   vendors       RFQVendor[]
   quotations    Quotation[]
-}
 
+  @@map("rfqs") // ✅ IMPORTANT: prevents Prisma naming confusion
+}
 
 model RFQVendor {
   id          String @id @default(cuid())
@@ -122,19 +115,17 @@ model RFQVendor {
   rfqId       String
   vendorId    String
 
-  rfq     Rfq    @relation(fields: [rfqId], references: [id])
-  vendor  Vendor @relation(fields: [vendorId], references: [id])
+  rfq         RFQ @relation(fields: [rfqId], references: [id])
+  vendor      Vendor @relation(fields: [vendorId], references: [id])
 
   @@unique([rfqId, vendorId])
 }
-
 
 enum QuotationStatus {
   SUBMITTED
   APPROVED
   REJECTED
 }
-
 
 model Quotation {
   id              String @id @default(cuid())
@@ -151,20 +142,18 @@ model Quotation {
 
   createdAt       DateTime @default(now())
 
-  rfq       Rfq    @relation(fields: [rfqId], references: [id])
-  vendor    Vendor @relation(fields: [vendorId], references: [id])
+  rfq             RFQ @relation(fields: [rfqId], references: [id])
+  vendor          Vendor @relation(fields: [vendorId], references: [id])
 
   approval        Approval?
   purchaseOrder   PurchaseOrder?
 }
-
 
 enum ApprovalStatus {
   PENDING
   APPROVED
   REJECTED
 }
-
 
 model Approval {
   id            String @id @default(cuid())
@@ -182,12 +171,10 @@ model Approval {
   approver       User @relation(fields: [approverId], references: [id])
 }
 
-
 model PurchaseOrder {
   id              String @id @default(cuid())
 
   poNumber        String @unique
-
   quotationId     String @unique
 
   createdAt       DateTime @default(now())
@@ -197,12 +184,10 @@ model PurchaseOrder {
   invoice         Invoice?
 }
 
-
 model Invoice {
   id                String @id @default(cuid())
 
   invoiceNumber     String @unique
-
   purchaseOrderId   String @unique
 
   taxAmount         Float
@@ -213,15 +198,12 @@ model Invoice {
   purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
 }
 
-
 model ActivityLog {
   id          String @id @default(cuid())
 
   action      String
-
   entityType  String
   entityId    String
-
   userId      String?
 
   createdAt   DateTime @default(now())
