@@ -9,64 +9,58 @@ type Context = {
 };
 
 // GET
+<<<<<<< HEAD
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+=======
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+>>>>>>> main
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "Purchase Order ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const po = await POService.getPOById(id);
-    return NextResponse.json(po);
-  } catch (err: any) {
+  if (!id) {
     return NextResponse.json(
-      { error: err.message },
-      { status: 404 }
+      { error: "Purchase Order ID is required" },
+      { status: 400 }
     );
   }
+
+  const po = await POService.getPOById(id);
+  return NextResponse.json(po);
 }
 
-// PUT
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-     const { id } = await params;
+  const { id } = await params;
 
-    console.log("Updating PO with ID:", id);
+  console.log("PO ID:", id);
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "Purchase Order ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const body: { status: POStatus } = await req.json();
-
-    if (!body?.status) {
-      return NextResponse.json(
-        { error: "Status is required" },
-        { status: 400 }
-      );
-    }
-
-    const updated = await POService.updatePOStatus(id, body.status);
-
-    return NextResponse.json(updated);
-  } catch (err: any) {
+  if (!id) {
     return NextResponse.json(
-      {
-        error: err.message || "Something went wrong",
-      },
-      {
-        status: err.statusCode || 500,
-      }
+      { error: "Purchase Order ID is required" },
+      { status: 400 }
     );
   }
+
+  const body = await req.json();
+
+  if (!body?.status) {
+    return NextResponse.json(
+      { error: "Status is required" },
+      { status: 400 }
+    );
+  }
+
+  const updated = await POService.updatePOStatus(id, body.status);
+
+  return NextResponse.json({
+    message: "Updated successfully",
+    data: updated,
+  });
 }

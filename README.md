@@ -322,8 +322,14 @@ User ──────────── creates ──────────
 
 | Name | Role |
 |------|------|
+<<<<<<< HEAD
 | **Dev Patel** | Full-Stack Developer (Backend & DB Schema) |
 | **Saumil** | Full-Stack Developer (Frontend & API Integration) |
+=======
+| **Dev Patel** |  
+| **Mohit Dadwani** |
+| **Saumil Jani** | 
+>>>>>>> main
 
 ---
 
