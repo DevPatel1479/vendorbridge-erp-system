@@ -9,7 +9,7 @@ export const RFQService = {
         data: {
           title: data.title,
           description: data.description,
-          quantity: data.quantity,
+          quantity: data.quantity && data.quantity > 0 ? data.quantity : 1,
           deadline: new Date(data.deadline),
           createdBy: userId,
           status: "OPEN",

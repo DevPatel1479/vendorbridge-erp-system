@@ -2,7 +2,14 @@ import { NextRequest } from "next/server";
 import { verifyToken, AuthUser } from "./auth";
 
 export function getUser(req: NextRequest): AuthUser {
-  const token = req.headers.get("authorization")?.replace("Bearer ", "");
+  let token = req.cookies.get("token")?.value;
+
+  if (!token) {
+    const authHeader = req.headers.get("authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.replace("Bearer ", "");
+    }
+  }
 
   if (!token) {
     throw new Error("Unauthorized");

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { POService } from "@/services/po.service";
-import { getUserIdFromRequest } from "@/lib/auth";
+import { getUser } from "@/lib/permissions";
 import type { CreatePOInput } from "@/types/purchase-order.types";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const data = await POService.getAllPO();
     return NextResponse.json(data);
@@ -18,7 +18,15 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body: CreatePOInput = await req.json();
-    const userId = getUserIdFromRequest(req);
+    
+    // Try to get user, but don't fail PO creation if auth token is missing
+    let userId: string | undefined;
+    try {
+      const user = getUser(req as any);
+      userId = user.id;
+    } catch {
+      userId = undefined;
+    }
 
     const po = await POService.createPOFromQuotation(
       body,
