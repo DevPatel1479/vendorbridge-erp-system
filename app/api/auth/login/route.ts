@@ -45,20 +45,21 @@ export async function POST(req: Request) {
     }
 
     const token = generateToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+  id: user.id,
+  email: user.email,
+  role: user.role,
+});
 
-    const response = NextResponse.json({
-      success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+const response = NextResponse.json({
+  success: true,
+  token, // 🔥 ADD THIS
+  user: {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+});
 
     response.cookies.set(
       "token",
