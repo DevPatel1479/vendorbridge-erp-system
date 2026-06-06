@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // TEMP: replace with auth later
+
     const vendorId = body.vendorId;
 
     const quotation = await QuotationService.createQuotation(body, vendorId);
