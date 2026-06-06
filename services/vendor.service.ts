@@ -18,7 +18,7 @@ export const VendorService = {
       orderBy: { createdAt: "desc" },
       include: {
         quotations: true,
-        rfqAssignments: true,
+        rfqVendors: true,
         user: {
           select: {
             id: true,
@@ -37,7 +37,7 @@ export const VendorService = {
       where: { id },
       include: {
         quotations: true,
-        rfqAssignments: true,
+        rfqVendors: true,
         user: {
           select: {
             id: true,
